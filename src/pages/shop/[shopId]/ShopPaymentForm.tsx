@@ -1,6 +1,5 @@
-import { checkSlipApi, type SlipVerify } from "@/Api/slip-verifications.api";
+import { postSlipApi, type SlipVerify } from "@/Api/slip-verifications.api";
 import QrCodeRender from "@/components/shops/QrcodeRender";
-import { QrcodeReceive } from "@/components/slipVerification/qrcodeReceive";
 import { RequestCamera, Webcam } from "@/components/slipVerification/Webcam";
 import { slipVerifySchema } from "@/schema/slipVerifySchema";
 
@@ -9,7 +8,7 @@ import { useEffect, useState, useCallback } from "react";
 const VerifyBankReceive = () => {
   const [openCamera, setOpenCamera] = useState(false);
   const [qrcode, setQrcode] = useState<SlipVerify[]>([]);
-
+  const [codeSlip, setCodeSlip] = useState<string | null>(null);
   const handleScan = useCallback((qrcode_data: string) => {
     const data: SlipVerify = {
       amount: 1,
@@ -35,7 +34,7 @@ const VerifyBankReceive = () => {
       if (!parsed.success) {
         throw new Error();
       }
-      await checkSlipApi.postSlip(parsed.data);
+      await postSlipApi.postSlip(parsed.data);
     } catch (error) {
       console.error("❌ Slip verification failed:", error);
     }
@@ -45,6 +44,7 @@ const VerifyBankReceive = () => {
     verifySlip();
   }, [verifySlip]);
 
+  console.log("codeSlip ", codeSlip);
   const renderQrCodeData = () => {
     const hasQrData = qrcode.some((item) => item.qrcode_data?.trim());
     if (hasQrData) {
@@ -68,18 +68,16 @@ const VerifyBankReceive = () => {
     <div className="max-w-lg mx-auto p-6 bg-white rounded-2xl shadow-lg border text-gray-800 space-y-6 text-xl font-medium leading-relaxed">
       {/* Header / ร้าน */}
       <div className="text-center border-b pb-4">
-        <h1 className="text-4xl font-bold tracking-wide text-blue-600">
+        <h1 className="text-2xl font-bold tracking-wide text-blue-600">
           MenuX
         </h1>
-        <p className="text-xl">Test verification own slip</p>
+        <p className="text-xl">Verification Payment Account</p>
       </div>
-
-      {/* Qr Code  receive*/}
-      {!openCamera && <QrcodeReceive />}
 
       {/* camera section */}
       <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 max-w-xl mx-auto">
-        {!openCamera && <RequestCamera QrCodeRender={QrCodeRender} />}
+        {!openCamera && <RequestCamera />}
+        <QrCodeRender codeSlip={codeSlip ?? ""} setCodeSlip={setCodeSlip} />
         <Webcam
           openCamera={openCamera}
           handleCamera={handleCamera}
@@ -88,6 +86,11 @@ const VerifyBankReceive = () => {
 
         {/* QR Code Data Display */}
         {renderQrCodeData()}
+      </div>
+      <div>
+        ข้อมูลที่ได้รับ
+        <p> ยืนยันข้อมูล</p>
+        กดปุ่มอัพเดท shop
       </div>
     </div>
   );

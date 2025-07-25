@@ -1,24 +1,23 @@
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-
-export const QrcodeLiveScan = () => {
-  return (
-    <DotLottieReact
-      src="https://lottie.host/76c4f205-5ae1-48fd-a504-d51f110592cc/GzxFhOpzz0.lottie"
-      loop
-      autoplay
-    />
-  );
-};
+import touchAnimation from "@/assets/touch.json"; // ปรับ path ตามโครงสร้างโปรเจกต์
+import QRcode_scanner from "@/assets/QRcode_scanner.json"; // ปรับ path ตามโครงสร้างโปรเจกต์
+import Lottie from "lottie-react";
 
 export const TouchClick = () => {
   return (
-    <div className="absolute top-1  pointer-events-none">
-      <DotLottieReact
-        src="https://lottie.host/8dd2e49c-dd12-474d-bd58-3f7cc5f543a6/bXV1RnSf8W.lottie"
-        loop
-        autoplay
-        color="white"
-      />
+    <div className="relative">
+      <div className="w-12 h-12 absolute bottom-1  right-1">
+        <Lottie animationData={touchAnimation} loop autoplay />
+      </div>
     </div>
   );
 };
+
+export const QrcodeLiveScan = () => {
+  return (
+    <div className="w-32 h-32">
+      <Lottie animationData={QRcode_scanner} loop autoplay />
+    </div>
+  );
+};
+
+export default QrcodeLiveScan;
