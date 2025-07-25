@@ -1,9 +1,9 @@
-import { api } from ".";
+import axiosInstance from ".";
 
 export const uploadImageApi = {
-  create: (data: any) => api.post("/r2", data),
-  getAll: (shopId: string) => api.get(`/r2/?shopId=${shopId}`),
-  getById: (id: string) => api.get(`/r2/${id}`),
-  update: (id: string, data: any) => api.put(`/r2/${id}`, data),
-  delete: (id: string) => api.delete(`/r2/${id}`),
+  create: (data: any) => axiosInstance.post("/r2", data),
+  getAll: (shopId: string) => axiosInstance.get(`/r2/?shopId=${shopId}`),
+  getById: (id: string) => axiosInstance.get(`/r2/${id}`),
+  update: (id: string, data: any) => axiosInstance.put(`/r2/${id}`, data),
+  delete: (id: string) => axiosInstance.delete(`/r2/${id}`),
 };

@@ -1,10 +1,9 @@
-import { api } from ".";
-
+import axiosInstance from ".";
 export const shopAPI = {
-  create: (data: any) => api.post("/shops", data),
-  getAll: () => api.get("/shops"),
-  getById: (id: string) => api.get(`/shops/${id}`),
-  update: (id: string, data: any) => api.put(`/shops/${id}`, data),
-  delete: (id: string) => api.delete(`/shops/${id}`),
-  getOwnerShop: () => api.get("/shops/getOwnerShop"),
+  create: (data: any) => axiosInstance.post("/shops", data),
+  getAll: () => axiosInstance.get("/shops"),
+  getById: (id: string) => axiosInstance.get(`/shops/${id}`),
+  update: (id: string, data: any) => axiosInstance.put(`/shops/${id}`, data),
+  delete: (id: string) => axiosInstance.delete(`/shops/${id}`),
+  getOwnerShop: () => axiosInstance.get("/shops/getOwnerShop"),
 };

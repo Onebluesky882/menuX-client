@@ -1,6 +1,6 @@
-import { userApi } from "@/Api/user.api";
 import { useUserStore } from "@/stores/useUser";
 import { useEffect } from "react";
+import { userApi } from "../Api/user.api";
 
 const useUsers = () => {
   const { setUser } = useUserStore.getState();

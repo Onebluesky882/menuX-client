@@ -1,14 +1,14 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const api = axios.create({
+export const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 
 let isRefreshing = false;
 
-api.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -26,9 +26,9 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/auth/refresh");
+        await axiosInstance.post("/auth/refresh");
 
-        return api(originalRequest);
+        return axiosInstance(originalRequest);
       } catch (refreshError) {
         // ล้าง token
         Cookies.remove("accessToken");
@@ -46,4 +46,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default axiosInstance;

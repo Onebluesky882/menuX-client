@@ -4,6 +4,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import useShop from "@/hooks/useShop";
 import { ShopTabsLayout } from "@/components/shops/ShopTabLayout";
 import MenuManagement from "./dashboard/MenuManagement";
+import VerifyBankReceive from "./ShopPaymentForm";
 
 type MenuProps = {
   available: boolean;
@@ -72,7 +73,7 @@ const Menus = ({ shopId }: MenuProps & { shopId: string }) => {
 const Payment = () => {
   return (
     <TabsContent value="payment">
-      <h1>hello</h1>
+      <VerifyBankReceive />
     </TabsContent>
   );
 };
