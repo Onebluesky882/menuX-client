@@ -1,20 +1,18 @@
-import { postSlipApi, type SlipVerify } from "@/Api/slip-verifications.api";
+import { postSlipApi } from "@/Api/slip-verifications.api";
 import QrCodeRender from "@/components/shops/QrcodeRender";
+import QrcodePreview from "@/components/slipVerification/QrcodePreview";
 import { RequestCamera, Webcam } from "@/components/slipVerification/Webcam";
-import { slipVerifySchema } from "@/schema/slipVerifySchema";
-
+import type { Qrcode } from "@/type/qrcode.type";
+import { BounceLoader } from "react-spinners";
 import { useEffect, useState, useCallback } from "react";
 
 const VerifyBankReceive = () => {
   const [openCamera, setOpenCamera] = useState(false);
-  const [qrcode, setQrcode] = useState<SlipVerify[]>([]);
-  const [codeSlip, setCodeSlip] = useState<string | null>(null);
+  const [qrcode, setQrcode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [slipVerify, setSlipVerify] = useState<Qrcode>();
   const handleScan = useCallback((qrcode_data: string) => {
-    const data: SlipVerify = {
-      amount: 1,
-      qrcode_data,
-    };
-    setQrcode([data]);
+    setQrcode(qrcode_data);
     setOpenCamera(false);
   }, []);
 
@@ -22,47 +20,29 @@ const VerifyBankReceive = () => {
     setOpenCamera((prev) => !prev);
   }, []);
 
-  const verifySlip = useCallback(async () => {
-    if (qrcode.length === 0) return;
-    try {
-      const prepareData: SlipVerify = {
-        amount: 1,
-        qrcode_data: qrcode[0].qrcode_data,
-      };
-      const parsed = slipVerifySchema.safeParse(prepareData);
-
-      if (!parsed.success) {
-        throw new Error();
-      }
-      await postSlipApi.postSlip(parsed.data);
-    } catch (error) {
-      console.error("❌ Slip verification failed:", error);
-    }
-  }, []);
-
   useEffect(() => {
-    verifySlip();
-  }, [verifySlip]);
+    const verifySlip = async () => {
+      try {
+        const prepareData = {
+          amount: 1,
+          qrcode_data: qrcode as string,
+        };
+        if (qrcode) {
+          setLoading(true);
+          const res = await postSlipApi.postSlip(prepareData);
+          if (res) {
+            setSlipVerify(res.data.data);
+          }
+        }
+      } catch (error) {
+        console.error("❌ Slip verification failed:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  console.log("codeSlip ", codeSlip);
-  const renderQrCodeData = () => {
-    const hasQrData = qrcode.some((item) => item.qrcode_data?.trim());
-    if (hasQrData) {
-      return (
-        <div className="bg-gray-100 p-3 rounded-lg text-sm text-gray-800 break-words">
-          <h3 className="font-medium mb-1">QR Code slip:</h3>
-          <div className="space-y-1">
-            {qrcode.map((item, index) => (
-              <div key={`qr-${index}`} className="font-mono text-xs">
-                {item.qrcode_data}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
+    verifySlip();
+  }, [qrcode]);
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-2xl shadow-lg border text-gray-800 space-y-6 text-xl font-medium leading-relaxed">
@@ -77,20 +57,29 @@ const VerifyBankReceive = () => {
       {/* camera section */}
       <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 max-w-xl mx-auto">
         {!openCamera && <RequestCamera />}
-        <QrCodeRender codeSlip={codeSlip ?? ""} setCodeSlip={setCodeSlip} />
+        <QrCodeRender codeSlip={qrcode as string} setCodeSlip={setQrcode} />
         <Webcam
           openCamera={openCamera}
           handleCamera={handleCamera}
           handleScan={handleScan}
         />
-
-        {/* QR Code Data Display */}
-        {renderQrCodeData()}
       </div>
-      <div>
-        ข้อมูลที่ได้รับ
-        <p> ยืนยันข้อมูล</p>
-        กดปุ่มอัพเดท shop
+      <div className="wrap-anywhere flex flex-col ">
+        ข้อมูลที่ได้รับ : {qrcode && <div>{qrcode}</div>}
+        {loading ? (
+          <div className="flex justify-center py-6">
+            <BounceLoader color="#9EB973" />
+          </div>
+        ) : slipVerify ? (
+          <>
+            <QrcodePreview data={slipVerify} />
+            <button className="bg-amber-200  rounded-xl py-2 mx-2 my-4 shadow-sm">
+              บันทึกข้อมูลธนาคารผู้รับ
+            </button>
+          </>
+        ) : (
+          <p className="text-red-500">ไม่พบข้อมูลสลิป</p>
+        )}
       </div>
     </div>
   );

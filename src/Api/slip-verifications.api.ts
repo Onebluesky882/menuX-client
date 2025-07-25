@@ -1,10 +1,11 @@
 import { axiosInstance } from ".";
 
-export type SlipVerify = {
+type VerifySlipProps = {
   amount: number;
   qrcode_data: string;
 };
+
 export const postSlipApi = {
-  postSlip: (data: SlipVerify) =>
-    axiosInstance.post("slip-verifications", data),
+  postSlip: (data: VerifySlipProps) =>
+    axiosInstance.post("slip-verifications/shop", data),
 };

@@ -1,5 +1,5 @@
 import { decodeQR } from "@/lib/scanQrcode";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { BsFillImageFill } from "react-icons/bs";
 
 type QrCodeRenderProps = {
@@ -12,7 +12,9 @@ const QrCodeRender = ({ setCodeSlip }: QrCodeRenderProps) => {
 
     if (!file) return;
     const code = await decodeQR(file);
-    setCodeSlip(code);
+    if (code) {
+      setCodeSlip(code); // <-- สร้าง object ที่ตรงกับ SlipVerify
+    }
   };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -23,8 +25,20 @@ const QrCodeRender = ({ setCodeSlip }: QrCodeRenderProps) => {
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
         {" "}
-        แสกนเพื่อบันทึกข้อมูลบัญชีรับเงิน
+        แสกนสลิปเพื่อบันทึกข้อมูลบัญชีรับเงิน
       </h2>
+      <div className="bg-gray-100 m-2 p-5">
+        <p>
+          <u>ขั้นตอน</u>
+        </p>
+        <ul className="text-gray-500 text-md">
+          <li>1.โอนเงินไปบัญชีที่ท่านต้องการบันทึก 1 บาท</li>
+          <li> หมายเหตุ ระบบยังไม่รองรับ แม่มณีและ k-shop</li>
+          <li>2.แนบสลิป qrcode</li>
+          <li>3.ยืนยันเพื่อบันทึกข้อมูล</li>
+        </ul>
+      </div>
+
       <div className="flex flex-col border border-dashed gap-2  border-gray-300 rounded-xl p-4   justify-center items-center mb-4 bg-gray-50">
         <span className="text-[14px] text-gray-500">อัพโหลดสลิป</span>
         <BsFillImageFill
