@@ -11,6 +11,22 @@ const useUsers = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
+  const register = async ({
+    email,
+    username,
+    password,
+  }: {
+    email: string;
+    username: string;
+    password: string;
+  }) => {
+    const res = await userApi.create({ email, username, password });
+    try {
+      console.log(res.data.message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const login = async ({
     email,
@@ -41,6 +57,6 @@ const useUsers = () => {
     const channel = new BroadcastChannel("user-session");
     channel.postMessage({ type: "SET_USER", user: null });
   };
-  return { logoutUser, profile, login, fetchProfile };
+  return { logoutUser, profile, login, fetchProfile, register };
 };
 export default useUsers;

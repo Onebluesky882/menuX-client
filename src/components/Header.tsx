@@ -23,7 +23,6 @@ const pathName = window.location.pathname;
 const Header = () => {
   const navigate = useNavigate();
   const { profile, logoutUser } = useUsers();
-  console.log("profile", profile);
   const { setShopById } = useShop();
 
   useEffect(() => {

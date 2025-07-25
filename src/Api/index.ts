@@ -6,8 +6,6 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Interceptor to catch 401 errors
-
 let isRefreshing = false;
 
 api.interceptors.response.use(

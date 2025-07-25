@@ -16,7 +16,7 @@ const Dashboard = () => {
 
     window.location.pathname = `/shops/${shop.id}`;
   };
-
+  console.log("shops ,", shops.length);
   return (
     <>
       {!Array.isArray(shops) ? (
@@ -37,6 +37,7 @@ const Dashboard = () => {
                 <div className="md:mt-2">
                   <QuickActionOpenShop />
                 </div>
+
                 <div className="w-[70%]">
                   <h2 className="text-xl text-center md:text-2xl font-semibold font-playfair ">
                     {shops.length > 0 && "ร้านอาหารของคุณ"}

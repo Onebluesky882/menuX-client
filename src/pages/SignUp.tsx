@@ -20,7 +20,7 @@ const SignUp = () => {
   const [user, setUser] = useState<CreateUserDto>();
   const [loading, setLoading] = useState(false);
 
-  const { fetchProfile } = useUsers();
+  const { register: signUp, fetchProfile, profile } = useUsers();
 
   const {
     register,
@@ -47,13 +47,13 @@ const SignUp = () => {
     const insertNewUser = async () => {
       if (!user) return;
       try {
-        const newUser = await userApi.create(user);
+        await signUp(user);
         await fetchProfile();
-        return { success: true, data: newUser };
       } catch (error) {
         console.error("Registration failed:", error);
       } finally {
         setLoading(false);
+        console.log("profile", profile);
         await navigator("/dashboard");
       }
     };

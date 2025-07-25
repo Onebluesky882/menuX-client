@@ -240,12 +240,7 @@ export default function MenuManagement() {
               <CardTitle>Add New Menu Item</CardTitle>
             </CardHeader>
             <CardContent>
-              <form
-                onSubmit={handleSubmit(onSubmit, (errors) =>
-                  console.log("here", errors)
-                )}
-                className="flex flex-col"
-              >
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
                 <div className="md:col-span-2 space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     Item Name
@@ -280,7 +275,7 @@ export default function MenuManagement() {
                         <div key={field.id} className="flex gap-3">
                           <Input
                             {...register(`options.${index}.label`)}
-                            placeholder="Option name"
+                            placeholder="ex. 3 ชิ้น"
                             className="flex-1 border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-lg"
                           />
                           <Input
