@@ -9,3 +9,9 @@ export type Qrcode = {
   sender_id: string;
   sender_name: string;
 };
+
+export type ReceiveBank = {
+  bankCode?: string | null | undefined;
+  bankAccount?: string | null | undefined;
+  bankId?: string | null | undefined;
+};

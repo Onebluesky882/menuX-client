@@ -2,15 +2,19 @@ import { postSlipApi } from "@/Api/slip-verifications.api";
 import QrCodeRender from "@/components/shops/QrcodeRender";
 import QrcodePreview from "@/components/slipVerification/QrcodePreview";
 import { RequestCamera, Webcam } from "@/components/slipVerification/Webcam";
-import type { Qrcode } from "@/type/qrcode.type";
-import { BounceLoader } from "react-spinners";
+import type { Qrcode, ReceiveBank } from "@/type/qrcode.type";
+import { BounceLoader, ClipLoader } from "react-spinners";
 import { useEffect, useState, useCallback } from "react";
+import { shopAPI } from "../../../Api/shop.api";
+import { useParams } from "react-router-dom";
 
 const VerifyBankReceive = () => {
   const [openCamera, setOpenCamera] = useState(false);
   const [qrcode, setQrcode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [slipVerify, setSlipVerify] = useState<Qrcode>();
+
+  const { shopId } = useParams();
   const handleScan = useCallback((qrcode_data: string) => {
     setQrcode(qrcode_data);
     setOpenCamera(false);
@@ -40,9 +44,31 @@ const VerifyBankReceive = () => {
         setLoading(false);
       }
     };
-
     verifySlip();
   }, [qrcode]);
+
+  const [process, setProcess] = useState(false);
+
+  const handleSubmitBank = async () => {
+    if (!shopId || !slipVerify) {
+      console.error("Missing shopId or slip data");
+      return;
+    }
+
+    try {
+      setProcess(true);
+      const insertBank: ReceiveBank = {
+        bankAccount: slipVerify?.receiver_name,
+        bankCode: slipVerify?.receiver_bank,
+        bankId: slipVerify?.receiver_id,
+      };
+      await shopAPI.patchShopReceiveBank(shopId, insertBank);
+    } catch (error) {
+      console.error("insert failed");
+    } finally {
+      setProcess(false);
+    }
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-2xl shadow-lg border text-gray-800 space-y-6 text-xl font-medium leading-relaxed">
@@ -73,8 +99,16 @@ const VerifyBankReceive = () => {
         ) : slipVerify ? (
           <>
             <QrcodePreview data={slipVerify} />
-            <button className="bg-amber-200  rounded-xl py-2 mx-2 my-4 shadow-sm">
-              บันทึกข้อมูลธนาคารผู้รับ
+            <button
+              disabled={process}
+              onClick={handleSubmitBank}
+              className={`${
+                process
+                  ? "bg-amber-200/50"
+                  : "bg-amber-200  rounded-xl py-2 mx-2 my-4 shadow-sm"
+              }`}
+            >
+              {process ? <ClipLoader /> : "บันทึกข้อมูลธนาคารผู้รับ"}
             </button>
           </>
         ) : (
