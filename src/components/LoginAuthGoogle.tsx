@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const LoginAuthGoogle = ({ title }: { title: string }) => {
   const handleLogin = () => {
-    window.location.assign("http://localhost:3000/auth/google");
+    window.location.assign(`${import.meta.env.VITE_API_BASE_URL}/auth/google`);
   };
 
   return (
