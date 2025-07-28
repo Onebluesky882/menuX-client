@@ -46,6 +46,7 @@ const Header = () => {
     window.location.pathname = "/";
   };
 
+  console.log("profile", profile);
   return (
     <header className="my-2      ">
       <div className="grid grid-cols-3   items-center px-6  py-4 bg-white shadow-md rounded-xl outline-1 outline-gray-100 ">

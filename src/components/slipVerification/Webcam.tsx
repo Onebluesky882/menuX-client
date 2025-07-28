@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import CameraCapture from "./CameraCapture";
 import { Button } from "../ui/button";
 import { QrcodeLiveScan, TouchClick } from "../DotLottieReact";

@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const axiosInstance = axios.create({
+  // baseURL: "https://menux-production-7266.up.railway.app/",
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });

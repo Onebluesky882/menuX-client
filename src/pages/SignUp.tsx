@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import BeatLoader from "react-spinners/BeatLoader";
 import useUsers from "@/hooks/useUsers";
 import { schema } from "@/schema/signUpField";
-import { userApi } from "@/Api/user.api";
 
 type CreateUserDto = {
   email: string;
