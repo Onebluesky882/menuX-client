@@ -1,4 +1,4 @@
-import touchAnimation from "@/assets/touch.json"; // ปรับ path ตามโครงสร้างโปรเจกต์
+import touchAnimation from "@/assets/QRcode_scanner.json"; // ปรับ path ตามโครงสร้างโปรเจกต์
 import QRcode_scanner from "@/assets/QRcode_scanner.json"; // ปรับ path ตามโครงสร้างโปรเจกต์
 import Lottie from "lottie-react";
 

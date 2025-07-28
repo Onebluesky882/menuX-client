@@ -23,8 +23,10 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
+
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "axios": ["./node_modules/axios/index.d.ts"]
     }
   },
   "include": ["src"]
