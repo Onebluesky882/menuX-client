@@ -22,8 +22,9 @@ const VerifyBankReceive = () => {
   const { shopId } = useParams();
   const navigate = useNavigate();
 
+  // todo after handle submit bank  redirect to shop detail
+
   const handleScan = useCallback((qrcode_data: string) => {
-    console.log("🔍 QR Code scanned:", qrcode_data);
     setQrcode(qrcode_data);
     setOpenCamera(false);
     setIsReset(false);
@@ -436,8 +437,6 @@ const VerifyBankReceive = () => {
               </div>
             </div>
           )}
-
-          {/* Start Scanning - Removed */}
         </div>
       </div>
     </div>
