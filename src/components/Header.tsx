@@ -1,6 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import useShop from "@/hooks/useShop";
+import useUsers from "@/hooks/useUsers";
+import { useEffect } from "react";
 import { BsShop } from "react-icons/bs";
+import { FaUserCircle } from "react-icons/fa";
+import { IoIosArrowDropdownCircle } from "react-icons/io";
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +19,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { IoIosArrowDropdownCircle } from "react-icons/io";
-import useUsers from "@/hooks/useUsers";
-import useShop from "@/hooks/useShop";
-import { useEffect } from "react";
+
 const pathName = window.location.pathname;
+
 const Header = () => {
   const navigate = useNavigate();
   const { profile, logoutUser } = useUsers();
@@ -41,46 +43,61 @@ const Header = () => {
     navigate("/login");
   };
 
-  const logout = () => {
-    logoutUser();
-    window.location.pathname = "/";
+  // ✅ Fixed logout function
+  const logout = async () => {
+    try {
+      console.log("🚪 Starting logout process...");
+
+      // Call the logout function from your hook
+      await logoutUser();
+
+      console.log("✅ Logout completed, redirecting...");
+
+      // Use navigate instead of window.location.pathname
+      navigate("/", { replace: true });
+
+      // Alternative: Use window.location.href for full page reload
+      // window.location.href = "/";
+    } catch (error) {
+      console.error("❌ Logout failed:", error);
+      // Even if logout fails, try to redirect
+      navigate("/", { replace: true });
+    }
   };
 
   console.log("profile", profile);
+
   return (
-    <header className="my-2      ">
-      <div className="grid grid-cols-3   items-center px-6  py-4 bg-white shadow-md rounded-xl outline-1 outline-gray-100 ">
-        <div className=" col-span-1 flex  w-full items-center text-2xl     max-sm:mr-10     ">
+    <header className="my-2">
+      <div className="grid grid-cols-3 items-center px-6 py-4 bg-white shadow-md rounded-xl outline-1 outline-gray-100">
+        <div className="col-span-1 flex w-full items-center text-2xl max-sm:mr-10">
           <span className="rounded-full border-2 border-amber-100 p-3">
             <BsShop
               onClick={() => navigate("/shops/dashboard")}
-              className="text-gray-600 "
+              className="text-gray-600"
             />
           </span>
         </div>
-        <div className="col-span-1    justify-center flex">
+        <div className="col-span-1 justify-center flex">
           <div>
             <span className="text-3xl">🍽️</span>
             <span className="text-indigo-600 text-3xl mx-2">
-              <Link to={"/"}>MenuX</Link>{" "}
+              <Link to={"/"}>MenuX</Link>
             </span>
           </div>
         </div>
-        <div className="col-span-1    justify-end flex">
-          <div className="flex items-center space-x-4"></div>{" "}
+        <div className="col-span-1 justify-end flex">
+          <div className="flex items-center space-x-4"></div>
           {profile !== null ? (
-            <div className="flex  items-center gap-2 ">
+            <div className="flex items-center gap-2">
               <div className="flex-col flex">
                 <span className="text-start text-[12px] font-medium text-gray-500">
-                  {" "}
                   Logged as :
                 </span>
                 <span className="text-[15px] font-medium text-gray-700">
-                  {" "}
                   {profile.email}
                 </span>
               </div>
-
               <DropdownMenuHeader logout={logout} />
             </div>
           ) : (
@@ -90,7 +107,7 @@ const Header = () => {
                 className="flex items-center flex-col"
               >
                 <FaUserCircle
-                  className="outline-none text-gray-600 "
+                  className="outline-none text-gray-600"
                   size={35}
                 />
                 <span className="text-[12px]">For Staff</span>
@@ -102,15 +119,29 @@ const Header = () => {
     </header>
   );
 };
+
 export default Header;
 
-export function DropdownMenuHeader({ logout }: { logout: () => void }) {
+// ✅ Updated DropdownMenuHeader with async logout support
+export function DropdownMenuHeader({
+  logout,
+}: {
+  logout: () => Promise<void> | void;
+}) {
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <IoIosArrowDropdownCircle size={25} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-50 border-gray-100 " align="start">
+      <DropdownMenuContent className="w-50 border-gray-100" align="start">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem>
@@ -146,13 +177,10 @@ export function DropdownMenuHeader({ logout }: { logout: () => void }) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-
         <DropdownMenuItem>Support</DropdownMenuItem>
-
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <span onClick={logout}>Log out</span>
-
+          <span onClick={handleLogout}>Log out</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

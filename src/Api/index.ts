@@ -7,19 +7,51 @@ export const axiosInstance = axios.create({
 
 let isRefreshing = false;
 
-// ✅ Function to check if user is logged in
+// ✅ Helper function to clear all cookies
+const clearAuthCookies = () => {
+  const cookiesToClear = ["accessToken", "refreshToken", "authToken"];
+
+  cookiesToClear.forEach(cookieName => {
+    // Clear for current domain
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    // Clear for parent domain (if subdomain)
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+    // Clear for root domain
+    const rootDomain = window.location.hostname.split(".").slice(-2).join(".");
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${rootDomain}`;
+  });
+};
+
+// ✅ Comprehensive auth state cleanup
+const clearAuthState = async () => {
+  // Clear localStorage
+  localStorage.removeItem("isAuthenticated");
+  localStorage.removeItem("user");
+
+  // Clear sessionStorage (in case you use it)
+  sessionStorage.removeItem("isAuthenticated");
+  sessionStorage.removeItem("user");
+
+  // Clear cookies
+  clearAuthCookies();
+
+  // Call logout API (don't await to avoid blocking)
+  try {
+    await axiosInstance.post("/auth/logout");
+    console.log("✅ Logout API called successfully");
+  } catch (error) {
+    console.warn("⚠️ Logout API failed, but continuing with cleanup:", error);
+  }
+};
+
 const isUserLoggedIn = (): boolean => {
-  // ตรวจสอบว่ามี auth state หรือไม่
-  // วิธีที่ 1: ตรวจจาก localStorage/sessionStorage
   const hasAuthToken = localStorage.getItem("isAuthenticated") === "true";
 
-  // วิธีที่ 2: ตรวจจาก current path
   const currentPath = window.location.pathname;
   const isOnAuthPage = ["/login", "/register", "/forgot-password"].includes(
     currentPath
   );
 
-  // วิธีที่ 3: ตรวจจาก cookie existence (ถ้าเป็น httpOnly cookie)
   const hasCookies =
     document.cookie.includes("refreshToken") ||
     document.cookie.includes("accessToken");
@@ -27,7 +59,6 @@ const isUserLoggedIn = (): boolean => {
   return hasAuthToken || hasCookies || !isOnAuthPage;
 };
 
-// ✅ Function to check if this is a protected route
 const isProtectedRoute = (url: string): boolean => {
   const protectedPaths = [
     "/auth/me",
@@ -38,12 +69,12 @@ const isProtectedRoute = (url: string): boolean => {
     "/dashboard",
   ];
 
-  return protectedPaths.some((path) => url.includes(path));
+  return protectedPaths.some(path => url.includes(path));
 };
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     const originalRequest = error.config;
     const isUnauthorized = error.response?.status === 401;
     const requestUrl = originalRequest.url || "";
@@ -54,6 +85,7 @@ axiosInstance.interceptors.response.use(
       !originalRequest._retry &&
       !isRefreshing &&
       requestUrl !== "/auth/refresh" && // ป้องกัน infinite loop
+      requestUrl !== "/auth/logout" && // ✅ Don't refresh on logout
       isUserLoggedIn() && // ✅ ตรวจว่า user login อยู่หรือไม่
       isProtectedRoute(requestUrl); // ✅ ตรวจว่าเป็น protected route หรือไม่
 
@@ -71,20 +103,15 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.error("❌ Token refresh failed:", refreshError);
 
-        // ✅ Clear auth state
-        localStorage.removeItem("isAuthenticated");
-        localStorage.removeItem("user");
-
-        // ลอง logout API
-        try {
-          await axiosInstance.post("/auth/logout");
-        } catch {
-          // ถ้า logout ไม่ได้ ไม่เป็นไร
-        }
+        // ✅ Complete auth state cleanup
+        await clearAuthState();
 
         // ไปหน้า login เฉพาะเมื่ออยู่ใน protected route
         if (isProtectedRoute(window.location.pathname)) {
-          window.location.href = "/login";
+          // ✅ Add delay to ensure cleanup completes
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 100);
         }
 
         return Promise.reject(refreshError);
@@ -102,7 +129,10 @@ axiosInstance.interceptors.response.use(
     // ✅ ถ้าไม่ได้ login และเป็น protected route
     if (isUnauthorized && !isUserLoggedIn() && isProtectedRoute(requestUrl)) {
       console.log("⚠️ Accessing protected route without login - redirecting");
-      window.location.href = "/login";
+      await clearAuthState(); // ✅ Clear state before redirect
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 100);
       return Promise.reject(error);
     }
 
@@ -112,7 +142,7 @@ axiosInstance.interceptors.response.use(
 
 // ✅ Request interceptor สำหรับ debug
 axiosInstance.interceptors.request.use(
-  (config) => {
+  config => {
     if (import.meta.env.DEV) {
       const authStatus = isUserLoggedIn() ? "🟢 Logged In" : "🔴 Not Logged In";
       console.log(
@@ -121,7 +151,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 );
 
 // ✅ Helper functions to manage auth state
@@ -142,6 +172,17 @@ export const getAuthState = () => {
     isAuthenticated: localStorage.getItem("isAuthenticated") === "true",
     user: JSON.parse(localStorage.getItem("user") || "null"),
   };
+};
+
+// ✅ Export logout function for manual use
+export const logout = async () => {
+  console.log("🚪 Logging out...");
+  await clearAuthState();
+
+  // Redirect to login after a short delay
+  setTimeout(() => {
+    window.location.href = "/login";
+  }, 100);
 };
 
 export default axiosInstance;
