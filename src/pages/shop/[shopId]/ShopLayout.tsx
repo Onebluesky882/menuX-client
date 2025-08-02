@@ -1,8 +1,8 @@
-import { Link, Outlet } from "react-router-dom";
-import { useEffect } from "react";
+import { ShopTabsLayout } from "@/components/shops/ShopTabLayout";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import useShop from "@/hooks/useShop";
-import { ShopTabsLayout } from "@/components/shops/ShopTabLayout";
+import { useEffect } from "react";
+import { Link, Outlet } from "react-router-dom";
 import MenuManagement from "./dashboard/MenuManagement";
 import VerifyBankReceive from "./ShopPaymentForm";
 
@@ -26,11 +26,12 @@ const ShopLayout = () => {
           <div className="min-h-screen  py-10 px-4">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-md md:text-2xl font-bold text-primary  text-center">
-                {selectedShop ? `Shop : ${selectedShop.name}` : "need login!"}
+                {selectedShop ? `Shop : ${selectedShop.name} ` : "need login!"}
               </h2>
 
               <div className=" bg-amber-50  rounded-2xl shadow-lg p-6 animate-fade-in">
-                <Tabs defaultValue="menu" className="   w-full">
+                {" "}
+                <Tabs defaultValue="menu" className="w-full">
                   {" "}
                   <ShopTabsLayout />
                   <AddMenu />

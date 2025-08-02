@@ -3,10 +3,10 @@ import QrCodeRender from "@/components/shops/QrcodeRender";
 import QrcodePreview from "@/components/slipVerification/QrcodePreview";
 import { RequestCamera, Webcam } from "@/components/slipVerification/Webcam";
 import type { Qrcode, ReceiveBank } from "@/type/qrcode.type";
-import { BounceLoader, ClipLoader } from "react-spinners";
-import { useEffect, useState, useCallback } from "react";
-import { shopAPI } from "../../../Api/shop.api";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { BounceLoader, ClipLoader } from "react-spinners";
+import { shopAPI } from "../../../Api/shop.api";
 
 const VerifyBankReceive = () => {
   const [openCamera, setOpenCamera] = useState(false);
@@ -21,7 +21,7 @@ const VerifyBankReceive = () => {
   }, []);
 
   const handleCamera = useCallback(() => {
-    setOpenCamera((prev) => !prev);
+    setOpenCamera(prev => !prev);
   }, []);
 
   useEffect(() => {
@@ -58,9 +58,9 @@ const VerifyBankReceive = () => {
     try {
       setProcess(true);
       const insertBank: ReceiveBank = {
-        bankAccount: slipVerify?.receiver_name,
-        bankCode: slipVerify?.receiver_bank,
-        bankId: slipVerify?.receiver_id,
+        receiverName: slipVerify?.receiver_name,
+        receiveBank: slipVerify?.receiver_bank,
+        receiverId: slipVerify?.receiver_id,
       };
       await shopAPI.patchShopReceiveBank(shopId, insertBank);
     } catch (error) {
