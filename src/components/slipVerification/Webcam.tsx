@@ -1,6 +1,6 @@
-import CameraCapture from "./CameraCapture";
-import { Button } from "../ui/button";
 import { QrcodeLiveScan, TouchClick } from "../DotLottieReact";
+import { Button } from "../ui/button";
+import CameraCapture from "./CameraCapture";
 type WebcamProps = {
   openCamera: boolean;
   handleCamera: () => void;
