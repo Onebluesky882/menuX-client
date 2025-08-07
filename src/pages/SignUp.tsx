@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import LoginAuthGoogle from "../components/LoginAuthGoogle";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import BeatLoader from "react-spinners/BeatLoader";
 import useUsers from "@/hooks/useUsers";
 import { schema } from "@/schema/signUpField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import BeatLoader from "react-spinners/BeatLoader";
+import LoginAuthGoogle from "../components/LoginAuthGoogle";
 
 type CreateUserDto = {
   email: string;
@@ -30,7 +30,7 @@ const SignUp = () => {
     mode: "onChange",
   });
 
-  const onSubmit: SubmitHandler<any> = async (data) => {
+  const onSubmit: SubmitHandler<any> = async data => {
     setLoading(true);
     const { confirmPassword, ...userWithoutConfirm } = data;
 
@@ -52,7 +52,6 @@ const SignUp = () => {
         console.error("Registration failed:", error);
       } finally {
         setLoading(false);
-        console.log("profile", profile);
         await navigator("/dashboard");
       }
     };
