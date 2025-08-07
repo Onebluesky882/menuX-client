@@ -38,7 +38,6 @@ const clearAuthState = async () => {
   // Call logout API (don't await to avoid blocking)
   try {
     await axiosInstance.post("/auth/logout");
-    console.log("✅ Logout API called successfully");
   } catch (error) {
     console.warn("⚠️ Logout API failed, but continuing with cleanup:", error);
   }
@@ -96,7 +95,6 @@ axiosInstance.interceptors.response.use(
       try {
         // ✅ ลอง refresh token
         await axiosInstance.post("/auth/refresh");
-        console.log("✅ Token refreshed successfully");
 
         // ลอง request เดิมอีกครั้ง
         return axiosInstance(originalRequest);
@@ -120,15 +118,12 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // ✅ ถ้าเป็น 401 ใน public route ให้ผ่านไปเลย
     if (isUnauthorized && !isProtectedRoute(requestUrl)) {
-      console.log(`ℹ️ 401 on public route: ${requestUrl} - ignoring`);
       return Promise.reject(error);
     }
 
     // ✅ ถ้าไม่ได้ login และเป็น protected route
     if (isUnauthorized && !isUserLoggedIn() && isProtectedRoute(requestUrl)) {
-      console.log("⚠️ Accessing protected route without login - redirecting");
       await clearAuthState(); // ✅ Clear state before redirect
       setTimeout(() => {
         window.location.href = "/login";
@@ -138,20 +133,6 @@ axiosInstance.interceptors.response.use(
 
     return Promise.reject(error);
   }
-);
-
-// ✅ Request interceptor สำหรับ debug
-axiosInstance.interceptors.request.use(
-  config => {
-    if (import.meta.env.DEV) {
-      const authStatus = isUserLoggedIn() ? "🟢 Logged In" : "🔴 Not Logged In";
-      console.log(
-        `📤 ${config.method?.toUpperCase()} ${config.url} | ${authStatus}`
-      );
-    }
-    return config;
-  },
-  error => Promise.reject(error)
 );
 
 // ✅ Helper functions to manage auth state
@@ -176,7 +157,6 @@ export const getAuthState = () => {
 
 // ✅ Export logout function for manual use
 export const logout = async () => {
-  console.log("🚪 Logging out...");
   await clearAuthState();
 
   // Redirect to login after a short delay
