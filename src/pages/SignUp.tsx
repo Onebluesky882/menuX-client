@@ -19,7 +19,7 @@ const SignUp = () => {
   const [user, setUser] = useState<CreateUserDto>();
   const [loading, setLoading] = useState(false);
 
-  const { register: signUp, fetchProfile, profile } = useUsers();
+  const { register: signUp, fetchProfile } = useUsers();
 
   const {
     register,
