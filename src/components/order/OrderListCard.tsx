@@ -6,6 +6,7 @@ type GroupedData = Record<
     menuName: string;
     totalQuantity: number;
     totalPrice: number;
+    status: string;
     options: Record<
       string, // optionLabel
       {
@@ -23,6 +24,7 @@ function groupByMenuAndOption(allOrderItems: OrderItem[]): GroupedData {
 
   allOrderItems.forEach(item => {
     const menuName = item.menu.name;
+    const status = item.status;
     const optionLabel = item.menuOption.label;
 
     if (!grouped[menuName]) {
@@ -30,6 +32,7 @@ function groupByMenuAndOption(allOrderItems: OrderItem[]): GroupedData {
         menuName,
         totalQuantity: 0,
         totalPrice: 0,
+        status: status,
         options: {},
       };
     }
@@ -68,23 +71,22 @@ const OrderListCard = ({ allOrderItems }: Props) => {
         .map(([menuName, menuGroup]) => (
           <div key={menuName} className="border rounded-lg p-4">
             <h2 className="text-xl font-bold mb-2">🍽 {menuGroup.menuName}</h2>
-            <p>Total Quantity: {menuGroup.totalQuantity}</p>
-            <p>Total Price: ฿{menuGroup.totalPrice.toFixed(2)}</p>
-
+            <div>
+              <p>Total Quantity: {menuGroup.totalQuantity}</p>
+              <p>Total Price: ฿{menuGroup.totalPrice.toFixed(2)}</p>
+              <span> สถานะ : {menuGroup.status}</span>/{/*  // todo  */}
+              <button>{"menu done change order to done"}</button>
+            </div>
             <div className="mt-4 pl-4 space-y-4">
               {Object.entries(menuGroup.options)
                 .sort(([aLabel], [bLabel]) => aLabel.localeCompare(bLabel))
                 .map(([optionLabel, optionGroup]) => (
                   <div key={optionLabel}>
-                    <h3 className="font-semibold text-lg">
-                      {optionGroup.label}
-                    </h3>
-                    <p>Quantity: {optionGroup.totalQuantity}</p>
-                    <p>Price: ฿{optionGroup.totalPrice.toFixed(2)}</p>
-
                     <div className="mt-2 space-y-2">
                       {optionGroup.orderItems.map(item => (
-                        <OrderItemCard key={item.id} item={item} />
+                        <>
+                          <OrderItemCard key={item.id} item={item} />
+                        </>
                       ))}
                     </div>
                   </div>
@@ -98,7 +100,10 @@ const OrderListCard = ({ allOrderItems }: Props) => {
 export default OrderListCard;
 const OrderItemCard = ({ item }: { item: OrderItem }) => (
   <div className="border p-2 bg-white shadow rounded-md">
-    <div className="flex justify-between text-sm">
+    <div
+      className="flex justify-between text-sm"
+      onClick={() => console.log(item.menuOption.label)}
+    >
       <div>
         {item.menu.name} ({item.menuOption.label}) × {item.quantity}
       </div>

@@ -15,11 +15,11 @@ type ShopStore = {
   setSelectedShop: (selected: Shop | null) => void;
 };
 
-export const useShopStore = create<ShopStore>((set) => ({
+export const useShopStore = create<ShopStore>(set => ({
   shops: [],
   selectedShop: null,
-  setShops: (shops) => set({ shops }),
-  setSelectedShop: (selectedShop) => set({ selectedShop }),
+  setShops: shops => set({ shops }),
+  setSelectedShop: selectedShop => set({ selectedShop }),
 
   clearSelectedShop: () => set({ selectedShop: null }),
 }));
