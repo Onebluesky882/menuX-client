@@ -1,8 +1,11 @@
 import { ShopTabsLayout } from "@/components/shops/ShopTabLayout";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import useShop from "@/hooks/useShop";
-import { useEffect } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useParams } from "react-router-dom";
+import { orderApi } from "../../../Api/order.api";
+import { OrderList } from "../../../components/order/OrderListCard";
+import type { Order } from "../../../type/Order.type";
 import MenuManagement from "./dashboard/MenuManagement";
 import VerifyBankReceive from "./ShopPaymentForm";
 
@@ -16,8 +19,23 @@ type MenuProps = {
 
 const ShopLayout = () => {
   const { selectedShop } = useShop();
+  const [selectedTab, setSelectedTab] = useState("orders");
+  const [orderPurchase, setOrderPurchase] = useState<Order[]>();
 
-  useEffect(() => {}, []);
+  const { shopId } = useParams();
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const res = await orderApi.getAllPurchase(shopId!);
+      setOrderPurchase(res.data.data);
+    };
+    if (selectedTab === "orders") {
+      fetchOrder();
+    }
+
+    fetchOrder();
+  }, [selectedTab, shopId]);
+
   return (
     <div>
       <Outlet />
@@ -31,7 +49,12 @@ const ShopLayout = () => {
 
               <div className=" bg-amber-50  rounded-2xl shadow-lg p-6 animate-fade-in">
                 {" "}
-                <Tabs defaultValue="menu" className="w-full">
+                <Tabs
+                  defaultValue="orders"
+                  className="w-full"
+                  value={selectedTab}
+                  onValueChange={setSelectedTab}
+                >
                   {" "}
                   <ShopTabsLayout />
                   <AddMenu />
@@ -43,6 +66,7 @@ const ShopLayout = () => {
                     amount={0}
                     shopId={selectedShop?.id ?? ""}
                   />
+                  <Orders orderPurchase={orderPurchase ?? []} />
                   <Payment />
                 </Tabs>
               </div>
@@ -61,11 +85,18 @@ const AddMenu = () => {
     </TabsContent>
   );
 };
+const Orders = ({ orderPurchase }: { orderPurchase: Order[] }) => {
+  return (
+    <TabsContent value="orders" className=" ">
+      <OrderList orders={orderPurchase} />
+    </TabsContent>
+  );
+};
 
 const Menus = ({ shopId }: MenuProps & { shopId: string }) => {
   return (
     <TabsContent value="shop-menu">
-      <Link to={`/menu/${shopId}`}>
+      <Link to={`/menu/${shopId}`} target="blank">
         <u>live menu</u>
       </Link>
     </TabsContent>

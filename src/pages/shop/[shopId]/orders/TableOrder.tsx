@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QrCode, Edit, Plus, Trash } from "lucide-react";
+import { Edit, Plus, QrCode, Trash } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 // Initial sample tables data
@@ -36,7 +36,7 @@ const TableSetup = () => {
     }
 
     setTables(
-      tables.map((table) =>
+      tables.map(table =>
         table.id === tableId ? { ...table, name: newTableName } : table
       )
     );
@@ -60,7 +60,7 @@ const TableSetup = () => {
 
   // Function to delete table
   const handleDeleteTable = (tableId: string) => {
-    setTables(tables.filter((table) => table.id !== tableId));
+    setTables(tables.filter(table => table.id !== tableId));
     toast.success("Table deleted successfully");
   };
 
@@ -82,7 +82,7 @@ const TableSetup = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {tables.map((table) => (
+        {tables.map(table => (
           <Card key={table.id} className="border border-gray-200">
             <CardContent className="p-6">
               {editingTable === table.id ? (
@@ -91,7 +91,7 @@ const TableSetup = () => {
                   <Input
                     id={`table-name-${table.id}`}
                     value={newTableName}
-                    onChange={(e) => setNewTableName(e.target.value)}
+                    onChange={e => setNewTableName(e.target.value)}
                     autoFocus
                   />
                   <div className="flex justify-end mt-4">

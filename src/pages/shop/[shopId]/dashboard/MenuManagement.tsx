@@ -152,14 +152,13 @@ export default function MenuManagement() {
         Manage your restaurant menu items and special promotions
       </p>
 
-      <Tabs defaultValue="menu">
+      <Tabs defaultValue="menu" className="">
         <TabsList className="mb-6">
           <TabsTrigger value="menu">Regular Menu</TabsTrigger>
           <TabsTrigger value="desserts">Dessert</TabsTrigger>
           <TabsTrigger value="drinks">Drink</TabsTrigger>
           <TabsTrigger value="promotions">Special</TabsTrigger>
         </TabsList>
-
         {/* ---------- DRAFT CARDS + UPLOAD ---------- */}
         {drafts.length > 0 && (
           <div className="p-4">
@@ -231,7 +230,6 @@ export default function MenuManagement() {
             </div>
           </div>
         )}
-
         {/* ---------- FORM TAB ---------- */}
         <TabsContent value="menu">
           <Card className="mb-6">
