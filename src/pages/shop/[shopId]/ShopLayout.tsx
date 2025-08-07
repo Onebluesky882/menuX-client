@@ -4,8 +4,8 @@ import useShop from "@/hooks/useShop";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { orderApi } from "../../../Api/order.api";
-import { OrderList } from "../../../components/order/OrderListCard";
-import type { Order } from "../../../type/Order.type";
+import OrderListCard from "../../../components/order/OrderListCard";
+import type { Order, OrderItem } from "../../../type/Order.type";
 import MenuManagement from "./dashboard/MenuManagement";
 import VerifyBankReceive from "./ShopPaymentForm";
 
@@ -35,6 +35,8 @@ const ShopLayout = () => {
 
     fetchOrder();
   }, [selectedTab, shopId]);
+
+  console.log("orderPurchase ", orderPurchase);
 
   return (
     <div>
@@ -86,9 +88,12 @@ const AddMenu = () => {
   );
 };
 const Orders = ({ orderPurchase }: { orderPurchase: Order[] }) => {
+  const allOrderItems: OrderItem[] = orderPurchase.flatMap(
+    order => order.orderItems
+  );
   return (
     <TabsContent value="orders" className=" ">
-      <OrderList orders={orderPurchase} />
+      <OrderListCard allOrderItems={allOrderItems} />
     </TabsContent>
   );
 };

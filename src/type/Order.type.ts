@@ -24,6 +24,6 @@ export type Order = {
   quantity: string;
   totalPrice: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   orderItems: OrderItem[];
 };
